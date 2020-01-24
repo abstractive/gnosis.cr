@@ -16,7 +16,7 @@ This shard was extracted from [`Artillery`](https://github.com/abstractive/artil
 Add this to your application's `shard.yml`:
 
 ```yaml
-mongo:
+gnosis:
   github: abstractive/gnosis.cr
   branch: release
 ```

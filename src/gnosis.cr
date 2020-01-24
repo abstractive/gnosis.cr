@@ -34,7 +34,7 @@ module Gnosis
     arrow = HUMANIZED ? ">".colorize(:dark_gray).mode(:bold).to_s : ">"
     timestamp = HUMANIZED ? datetime.to_s(TIMESTAMP).colorize(:dark_gray).to_s : datetime.to_s(TIMESTAMP)
     io << label[0] << ", [" << timestamp  << " #" << Process.pid << "] #{arrow}"
-    io << label.rjust(5) << " #{arrow} "
+    io << label.rjust(6) << " #{arrow} "
     if progname
       tag = HUMANIZED ? progname.colorize(:light_yellow).to_s : progname
       io << tag << " #{arrow} "

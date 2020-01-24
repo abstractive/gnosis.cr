@@ -1,7 +1,7 @@
 name: gnosis
 version: 0.0.1
 
-description: Colorized logging for decentral systems.
+description: Colorized logger for decentral systems.
 
 authors:
   - digitalextremist <code@extremist.digital>

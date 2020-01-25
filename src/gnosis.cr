@@ -5,17 +5,23 @@ module Gnosis
   extend self
 
   #de TODO: Allow defaults to be changed by ENV or other means.
-  LOG_NAME = "Gnosis"
-  LOG_MARKS = false
-  HUMANIZED = true
-  FILESYSTEM = true
+  @@log_name = "Gnosis"
+  @@humanized = true
+  @@use_marks = false
+  @@use_filesystem = true
+
+  def log_name=(value)              @@log_name = value          end
+  def humanized=(value)             @@humanized = value         end
+  def use_marks=(value)             @@use_marks = value         end
+  def use_filesystem=(value)        @@use_filesystem = value    end
+
   TIMESTAMP = "%Y-%m-%d %H:%M:%S.%6N"
 
   @@file = uninitialized File
   @@writer = uninitialized IO::MultiWriter
   @@logger = uninitialized ::Logger
 
-  @@logger = unless FILESYSTEM
+  @@logger = unless @@use_filesystem
     ::Logger.new(STDOUT)
   else
     Dir.mkdir("logs/") unless Dir.exists?("logs/")
@@ -25,25 +31,25 @@ module Gnosis
   end
 
   @@logger.level = ::Logger::DEBUG
-  @@logger.progname = LOG_NAME
+  @@logger.progname = @@log_name
 
   delegate debug, warn, info, error, to: @@logger
 
   @@logger.formatter = ::Logger::Formatter.new do |severity, datetime, progname, message, io|
     label = severity.unknown? ? "ANY" : severity.to_s
-    arrow = HUMANIZED ? ">".colorize(:dark_gray).mode(:bold).to_s : ">"
-    timestamp = HUMANIZED ? datetime.to_s(TIMESTAMP).colorize(:dark_gray).to_s : datetime.to_s(TIMESTAMP)
+    arrow = @@humanized ? ">".colorize(:dark_gray).mode(:bold).to_s : ">"
+    timestamp = @@humanized ? datetime.to_s(TIMESTAMP).colorize(:dark_gray).to_s : datetime.to_s(TIMESTAMP)
     io << label[0] << ", [" << timestamp  << " #" << Process.pid << "] #{arrow}"
     io << label.rjust(6) << " #{arrow} "
     if progname
-      tag = HUMANIZED ? progname.colorize(:light_yellow).to_s : progname
+      tag = @@humanized ? progname.colorize(:light_yellow).to_s : progname
       io << tag << " #{arrow} "
     end
     io << message
   end
 
   def mark(*symbols)
-    if LOG_MARKS
+    if @@use_marks
       printf("#{symbols.join}")
     end
     nil
@@ -55,7 +61,7 @@ module Gnosis
   end
 
   def fatal(message, tag=nil, kill=true)
-    @@logger.fatal(HUMANIZED ? message.colorize(:red).mode(:bold).to_s : message, tag)
+    @@logger.fatal(@@humanized ? message.colorize(:red).mode(:bold).to_s : message, tag)
     if kill
       abort
     end
@@ -64,10 +70,10 @@ module Gnosis
 
   {% for color in %w{ red green cyan magenta blue yellow } %}
     def light_{{color.id}}(message)
-      (HUMANIZED) ? message.colorize(:light_{{color.id}}).to_s : message
+      (@@humanized) ? message.colorize(:light_{{color.id}}).to_s : message
     end
     def {{color.id}}(message)
-      (HUMANIZED) ? message.colorize(:{{color.id}}).to_s : message
+      (@@humanized) ? message.colorize(:{{color.id}}).to_s : message
     end
   {% end %}
 

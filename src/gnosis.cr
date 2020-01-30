@@ -33,8 +33,6 @@ module Gnosis
   @@logger.level = ::Logger::DEBUG
   @@logger.progname = @@log_name
 
-  delegate debug, warn, info, error, to: @@logger
-
   @@logger.formatter = ::Logger::Formatter.new do |severity, datetime, progname, message, io|
     label = severity.unknown? ? "ANY" : severity.to_s
     arrow = @@humanized ? ">".colorize(:dark_gray).mode(:bold).to_s : ">"
@@ -59,6 +57,13 @@ module Gnosis
     @@logger.info(message, tag)
     nil
   end
+
+  {% for level in %w{debug info warn error} %}
+    def {{level.id}}(message, tag=nil)
+      @@logger.{{level.id}}(message, tag)
+      nil
+    end
+  {% end %}
 
   def fatal(message, tag=nil, kill=true)
     @@logger.fatal(@@humanized ? message.colorize(:red).mode(:bold).to_s : message, tag)

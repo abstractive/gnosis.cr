@@ -37,13 +37,30 @@ module Gnosis
     label = severity.unknown? ? "ANY" : severity.to_s
     arrow = @@humanized ? ">".colorize(:dark_gray).mode(:bold).to_s : ">"
     timestamp = @@humanized ? datetime.to_s(TIMESTAMP).colorize(:dark_gray).to_s : datetime.to_s(TIMESTAMP)
-    io << label[0] << ", [" << timestamp  << " #" << Process.pid << "] #{arrow}"
-    io << label.rjust(6) << " #{arrow} "
+    io << (@@humanized ? colorized(label[0]) : label[0])
+    io << ", [" << timestamp  << " #" << Process.pid << "] #{arrow}"
+    io << ((@@humanized && label[0] != "I") ? colorized(label[0], label.rjust(6)) : label.rjust(6))
+    io << " #{arrow} "
     if progname
       tag = @@humanized ? progname.colorize(:light_yellow).to_s : progname
       io << tag << " #{arrow} "
     end
     io << message
+  end
+
+  private def colorized(label, message : String? = nil)
+    case label
+    when 'D'
+      ( (message) ? message : label).colorize(:cyan)
+    when 'I'
+      ( (message) ? message : label)
+    when 'W'
+      ( (message) ? message : label).colorize(:magenta)
+    when 'E'
+      ( (message) ? message : label).colorize(:red)
+    else
+      ( (message) ? message : label).colorize(:yellow)
+    end
   end
 
   def mark(*symbols)

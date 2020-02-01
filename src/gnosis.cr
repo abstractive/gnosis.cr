@@ -84,9 +84,7 @@ module Gnosis
 
   def fatal(message, tag=nil, kill=true)
     @@logger.fatal(@@humanized ? message.colorize(:red).mode(:bold).to_s : message, tag)
-    if kill
-      abort
-    end
+    abort if kill
     nil
   end
 
@@ -99,9 +97,11 @@ module Gnosis
     end
   {% end %}
 
-  def exception(ex, tag=nil)
+  def exception(ex, tag : String? = nil)
     #de log "#{ex.class.name.colorize(:red).mode(:bold).to_s}: #{ex.message.colorize(:white).to_s}\n#{ex.backtrace.join('\n')}"
-    fatal(ex, tag, false)
+    name = ex.class.name
+    name = "#{name}: #{tag}" if tag
+    fatal(ex.message, name, false)
     nil
   end
 

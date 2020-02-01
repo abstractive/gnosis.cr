@@ -9,11 +9,13 @@ module Gnosis
   @@humanized = true
   @@use_marks = false
   @@use_filesystem = true
+  @@show_backtraces = true
 
   def log_name=(value)              @@log_name = value          end
   def humanized=(value)             @@humanized = value         end
   def use_marks=(value)             @@use_marks = value         end
   def use_filesystem=(value)        @@use_filesystem = value    end
+  def show_backtraces=(value)       @@show_backtraces = value   end
 
   TIMESTAMP = "%Y-%m-%d %H:%M:%S.%6N"
 
@@ -102,6 +104,9 @@ module Gnosis
     name = ex.class.name
     name = "#{name}: #{tag}" if tag
     fatal(ex.message, name, false)
+    ex.backtrace.each { |line|
+      error line, "#{ex.class.name}: Backtrace"
+    }
     nil
   end
 

@@ -7,6 +7,11 @@ Gnosis.log "Hello World."
 Gnosis.warn "Hello World;"
 Gnosis.error "Hello World!"
 
+begin
+  raise Exception.new("HELLO, WORLD")
+rescue ex
+  Gnosis.exception(ex, "Hello. World.")
+end
 
 r = Gnosis.info "Word"
 
